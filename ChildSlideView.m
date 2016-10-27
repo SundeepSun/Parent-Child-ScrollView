@@ -55,6 +55,8 @@
 
 @property (strong, nonatomic) NSMutableArray *buttonsArray;
 
+@property (assign)            CGPoint ScrollViewOffset ;
+
 @end
 
 
@@ -129,6 +131,7 @@
         _childScrollView.contentSize = CGSizeMake(slideItemWidth+40, 0);
         _childScrollView.bounces = YES;
         _childScrollView.showsHorizontalScrollIndicator = NO;
+        _childScrollView.delegate = self;
         [self addSubview:_childScrollView];
         
     }
@@ -201,6 +204,10 @@
 #pragma mark - event response
 - (void)buttonClicked:(UIButton *)button {
     
+    if( (button.frame.origin.x + button.frame.size.width) > (_ScrollViewOffset.x + SCREEN_WIDTH )){
+        [_childScrollView setContentOffset:CGPointMake(button.frame.origin.x, 0) animated:YES];
+    }
+    
     [self.delegate slideViewChild:self didSelectItemAtIndex:button.tag];
     [self animateSliderToPositionWithOffset:CGPointMake(button.frame.origin.x, 0) tag:button.tag];
     for (UIButton *button in _buttonsArray) {
@@ -269,6 +276,17 @@
     [self configureData];
     [self addSubViews];
 }
+
+
+#pragma mark - ScrollView Delegate Methods
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    
+    _ScrollViewOffset.x = scrollView.contentOffset.x;
+}
+
+
 
 
 
